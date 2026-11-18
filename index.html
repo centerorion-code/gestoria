@@ -175,6 +175,32 @@
       font-size: 0.85rem;
     }
 
+    /* Aviso si WhatsApp no se abre */
+    .aviso-wa {
+      position: fixed;
+      left: 14px;
+      right: 14px;
+      bottom: 92px;
+      z-index: 20;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(29, 79, 160, 0.2);
+    }
+    .aviso-wa[hidden] { display: none; }
+    .aviso-wa p { margin: 0 0 10px; color: #2e3a55; font-weight: 600; }
+    .aviso-wa strong { display: block; font-size: 1.1rem; margin-bottom: 10px; color: var(--azul-oscuro); }
+    .aviso-wa button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 20px;
+      background: #5ccd8e;
+      color: #ffffff;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
     /* Móvil */
     @media (max-width: 640px) {
       header { padding: 32px 0 28px; }
@@ -263,9 +289,45 @@
     <a class="boton tiktok" href="https://www.tiktok.com/@tramitesmigratoriosvdr" target="_blank" rel="noopener">TikTok</a>
   </nav>
 
+  <div class="aviso-wa" id="aviso-wa" hidden>
+    <p>¿No se abrió WhatsApp? Copia el número y pégalo en tu chat:</p>
+    <strong>+58 424 832 9060</strong>
+    <button type="button" id="copiar-numero">Copiar número</button>
+  </div>
+
   <footer>
     <div class="contenedor">Vanessa Da Rocha · Trámites migratorios</div>
   </footer>
+
+  <script>
+    (function () {
+      var numero = "584248329060";
+      var mensaje = "Hola, quiero información de un trámite";
+      var aviso = document.getElementById("aviso-wa");
+      var esMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+      document.querySelectorAll(".whatsapp").forEach(function (boton) {
+        boton.addEventListener("click", function (e) {
+          if (!esMovil) return; // en ordenador se usa el enlace normal (WhatsApp Web)
+          e.preventDefault();
+          window.location.href = "whatsapp://send?phone=" + numero + "&text=" + encodeURIComponent(mensaje);
+          // Si la app no se abre, la página sigue visible: mostramos el número
+          setTimeout(function () {
+            if (!document.hidden) aviso.hidden = false;
+          }, 1500);
+        });
+      });
+
+      document.getElementById("copiar-numero").addEventListener("click", function () {
+        var texto = "+58 424 832 9060";
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(texto).then(function () {
+            this.textContent = "¡Copiado!";
+          }.bind(this));
+        }
+      });
+    })();
+  </script>
 
 </body>
 </html>
